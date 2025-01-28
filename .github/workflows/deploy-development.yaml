@@ -1,0 +1,42 @@
+name: Deploy Development
+
+on:
+  push:
+    branches:
+      - develop  # Trigger on any push to the develop branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Use an Ubuntu runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # or another version as per your needs
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build static site with Parcel
+        run: npm run build  # Assuming Parcel build command is configured in your package.json
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist  # Path to your built website (adjust if different)
+
+  deploy:
+    runs-on: ubuntu-latest  # Use an Ubuntu runner
+
+    needs: build  # Deploy job depends on the build job
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
